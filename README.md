@@ -1,4 +1,4 @@
-# Mongoid::Enum
+# Mongoid::Enum (::I18n alternative gem)
 
 [![Build
 Status](https://travis-ci.org/thetron/mongoid-enum.png)](https://travis-ci.org/thetron/mongoid-enum)
@@ -141,7 +141,7 @@ user.administrator? # => false
 user.roles # => [:basic, :manager]
 ```
 
-Since the underlying datatype for storing values is an array, if you 
+Since the underlying datatype for storing values is an array, if you
 need to specify default(s), ensure you use an array:
 
 ```ruby
@@ -159,6 +159,24 @@ can turn them off:
 ```ruby
 enum :status, [:up, :down], :validate => false
 ```
+
+## I18n
+
+Two helpers are available, `#enum_i18`n:
+
+```
+Payment#status_i18n # => "Pending"
+```
+
+And `#enum_values`, good for drop downs:
+
+```
+Payment#status_values # => [["Pending, :pending]....
+```
+
+While/if the author implements/merges the i18n functionality, you may use
+an alternative gem: `mongoid-enum-i18n`
+
 
 # Issues and Feature Requests
 
