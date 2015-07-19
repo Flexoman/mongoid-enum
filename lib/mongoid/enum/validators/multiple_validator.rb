@@ -10,7 +10,7 @@ module Mongoid
           values = Array(values)
 
           if options[:allow_nil]
-            if !all_included?(values, options[:in])
+            unless all_included?(values, options[:in])
               add_error_message record, attribute
             end
           elsif values.empty? || !all_included?(values, options[:in])

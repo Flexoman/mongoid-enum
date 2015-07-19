@@ -14,7 +14,9 @@ module Mongoid
     #   enum :status, in: %i( waiting approved dismissed )
     #
     module ClassMethods
-
+      #
+      # Main class method
+      #
       def enum(field_name, values, options = {})
         options = default_options(values).merge(options)
 
@@ -22,8 +24,7 @@ module Mongoid
 
         create_field field_name, options
         create_i18n_helper field_name, options
-        create_values_helper field_name, values, options
-        alias_attribute name, field_name
+        create_values_helper field_name, options
 
         create_validations field_name, values, options
         define_value_scopes_and_accessors field_name, values, options
@@ -71,7 +72,7 @@ module Mongoid
         end
       end
 
-      def create_values_helper(field_name, values, options)
+      def create_values_helper(field_name, options)
         return if options[:i18n].is_a?(FalseClass)
         define_method("#{field_name}_values") do
           I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
