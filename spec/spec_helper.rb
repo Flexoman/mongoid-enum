@@ -14,9 +14,10 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
-    DatabaseCleaner.clean
     Mongoid.purge!
   end
 end
+
+Mongo::Logger.logger.level = Logger::INFO if Mongoid::VERSION >= '5'
 
 Mongoid.load!(File.expand_path("../support/mongoid.yml", __FILE__), :test)

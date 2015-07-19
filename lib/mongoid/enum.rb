@@ -1,18 +1,27 @@
-require "mongoid/enum/version"
-require "mongoid/enum/validators/multiple_validator"
+require 'mongoid/enum/version'
+require 'mongoid/enum/validators/multiple_validator'
 
 module Mongoid
+  # Mongoid Enum
   module Enum
     extend ActiveSupport::Concern
+    #
+    # Class Methods
+    #
+    # class Model
+    #   include Mongoid::Enum
+    #
+    #   enum :status, in: %i( waiting approved dismissed )
+    #
     module ClassMethods
 
-      def enum(name, values, options = {})
-        field_name = :"_#{name}"
+      def enum(field_name, values, options = {})
         options = default_options(values).merge(options)
 
-        set_values_constant name, values
+        set_values_constant field_name, values
 
         create_field field_name, options
+        create_helpers field_name, options
         alias_attribute name, field_name
 
         create_validations field_name, values, options
@@ -20,6 +29,7 @@ module Mongoid
       end
 
       private
+
       def default_options(values)
         {
           :multiple => false,
@@ -41,15 +51,30 @@ module Mongoid
 
       def create_validations(field_name, values, options)
         if options[:multiple] && options[:validate]
-          validates field_name, :'mongoid/enum/validators/multiple' => { :in => values, :allow_nil => !options[:required] }
+          validates field_name, :'mongoid/enum/validators/multiple' => {
+            :in => values,
+            :allow_nil => !options[:required]
+          }
         elsif validate
-          validates field_name, :inclusion => {:in => values}, :allow_nil => !options[:required]
+          validates field_name,
+                    :inclusion => { :in => values },
+                    :allow_nil => !options[:required]
+        end
+      end
+
+      def create_helpers(field_name, options)
+        return if options[:i18n].is_a?(FalseClass)
+        define_method("#{field_name}_i18n") do
+          I18n.translate("mongoid.symbolizes.#{model_name.to_s.underscore}."\
+                         "#{field_name}.#{self[field_name]}")
         end
       end
 
       def define_value_scopes_and_accessors(field_name, values, options)
         values.each do |value|
-          scope value, ->{ where(field_name => value) }
+          unless options[:scope].is_a?(FalseClass)
+            scope value, -> { where(field_name => value) }
+          end
 
           if options[:multiple]
             define_array_accessor(field_name, value)

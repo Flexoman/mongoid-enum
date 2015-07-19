@@ -12,9 +12,9 @@ describe Mongoid::Enum do
   let(:klass) { User }
   let(:instance) { User.new }
   let(:alias_name) { :status }
-  let(:field_name) { :"_#{alias_name}" }
+  let(:field_name) { :"#{alias_name}" }
   let(:values) { [:awaiting_approval, :approved, :banned] }
-  let(:multiple_field_name) { :"_roles" }
+  let(:multiple_field_name) { :roles }
 
   describe "field" do
     it "is defined" do
@@ -111,15 +111,15 @@ describe Mongoid::Enum do
             instance.save
             instance.author!
             instance.editor!
-            expect(instance.editor?).to be_true
-            expect(instance.author?).to be_true
+            expect(instance.editor?).to be true
+            expect(instance.author?).to be true
           end
         end
 
         context "when {{enum}} does not contain {{value}}" do
           it "returns false" do
             instance.save
-            expect(instance.author?).to be_false
+            expect(instance.author?).to be false
           end
         end
       end
@@ -173,5 +173,12 @@ describe Mongoid::Enum do
         expect(instance.roles).to eq []
       end
     end
+  end
+
+  describe "i18n" do
+    it "should have a helper to translate the enum" do
+      expect(instance.status_i18n).to match(/en.mongoid.symbolizes.user.status.awaiting_approval/)
+    end
+
   end
 end
