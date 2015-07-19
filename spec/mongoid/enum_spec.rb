@@ -177,8 +177,11 @@ describe Mongoid::Enum do
 
   describe "i18n" do
     it "should have a helper to translate the enum" do
-      expect(instance.status_i18n).to match(/en.mongoid.symbolizes.user.status.awaiting_approval/)
+      expect(instance.status_i18n).to eq('Awaiting Approval')
     end
 
+    it "should have a helper to translate the values" do
+      expect(instance.status_values).to eq([["Awaiting Approval", :awaiting_approval]])
+    end
   end
 end

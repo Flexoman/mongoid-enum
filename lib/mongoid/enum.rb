@@ -21,7 +21,8 @@ module Mongoid
         set_values_constant field_name, values
 
         create_field field_name, options
-        create_helpers field_name, options
+        create_i18n_helper field_name, options
+        create_values_helper field_name, values, options
         alias_attribute name, field_name
 
         create_validations field_name, values, options
@@ -62,11 +63,19 @@ module Mongoid
         end
       end
 
-      def create_helpers(field_name, options)
+      def create_i18n_helper(field_name, options)
         return if options[:i18n].is_a?(FalseClass)
         define_method("#{field_name}_i18n") do
-          I18n.translate("mongoid.symbolizes.#{model_name.to_s.underscore}."\
+          I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
                          "#{field_name}.#{self[field_name]}")
+        end
+      end
+
+      def create_values_helper(field_name, values, options)
+        return if options[:i18n].is_a?(FalseClass)
+        define_method("#{field_name}_values") do
+          I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
+                         "#{field_name}").map {  |k, v| [v, k] }
         end
       end
 

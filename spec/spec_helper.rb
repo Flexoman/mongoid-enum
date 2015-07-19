@@ -18,6 +18,9 @@ RSpec.configure do |config|
   end
 end
 
+I18n.load_path << 'spec/support/app.en.yml'
+I18n.default_locale = :en
+
 Mongo::Logger.logger.level = Logger::INFO if Mongoid::VERSION >= '5'
 
 Mongoid.load!(File.expand_path("../support/mongoid.yml", __FILE__), :test)
