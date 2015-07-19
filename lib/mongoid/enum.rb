@@ -85,7 +85,7 @@ module Mongoid
           unless options[:scope].is_a?(FalseClass)
             scope value, -> { where(field_name => value) }
           end
-          next if options[:accessors].is_a?(FalseClass)
+          next if options[:accessor].is_a?(FalseClass)
           if options[:multiple]
             define_array_accessor(field_name, value)
           else
