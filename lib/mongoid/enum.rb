@@ -18,11 +18,11 @@ module Mongoid
       # Main class method
       #
       def enum(field_name, values, options = {})
-        options = default_options(values).merge(options)
+        options = default_options.merge(options)
 
         set_values_constant field_name, values
 
-        create_field field_name, options
+        create_field field_name, options, values
         create_i18n_helper field_name, options
         create_values_helper field_name, options
 
@@ -32,10 +32,9 @@ module Mongoid
 
       private
 
-      def default_options(values)
+      def default_options
         {
           :multiple => false,
-          :default  => values.first,
           :required => true,
           :validate => true
         }
@@ -46,9 +45,15 @@ module Mongoid
         const_set const_name, values
       end
 
-      def create_field(field_name, options)
+      def create_field(field_name, options, values)
         type = options[:multiple] && Array || Symbol
-        field field_name, :type => type, :default => options[:default]
+        default = \
+        if options.has_key?(:default)
+          options[:default]
+        else
+          options[:multiple] ? [] : values.first
+        end
+        field field_name, :type => type, :default => default
       end
 
       def create_validations(field_name, values, options)
@@ -74,7 +79,7 @@ module Mongoid
 
       def create_values_helper(field_name, options)
         return if options[:i18n].is_a?(FalseClass)
-        define_method("#{field_name}_values") do
+        define_singleton_method("#{field_name}_values") do
           I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
                          "#{field_name}").map {  |k, v| [v, k] }
         end
