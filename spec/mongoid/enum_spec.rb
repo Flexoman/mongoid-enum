@@ -52,6 +52,22 @@ describe Mongoid::Enum do
     end
   end
 
+  describe "'required' option" do
+    context "when true" do
+      let(:instance) { User.new status: nil }
+      it "is not valid with nil value" do
+        expect(instance).to_not be_valid
+      end
+    end
+
+    context "when false" do
+      let(:instance) { User.new roles: nil }
+      it "is valid with nil value" do
+        expect(instance).to be_valid
+      end
+    end
+  end
+
   describe 'constant' do
     it 'is set to the values' do
       expect(klass::STATUS).to eq values
@@ -183,7 +199,7 @@ describe Mongoid::Enum do
     end
 
     it 'should have a helper to translate the values' do
-      expect(instance.status_values)
+      expect(User.status_values)
         .to eq([['Awaiting Approval', :awaiting_approval]])
     end
   end
