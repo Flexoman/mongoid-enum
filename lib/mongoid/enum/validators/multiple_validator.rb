@@ -7,7 +7,7 @@ module Mongoid
       #
       class MultipleValidator < ActiveModel::EachValidator
         def validate_each(record, attribute, values)
-          values = Array(values)
+          values = Array(values).map(&:to_sym)
 
           if options[:allow_nil]
             unless all_included?(values, options[:in])

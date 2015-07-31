@@ -28,15 +28,17 @@ module Mongoid
 
         create_validations field_name, values, options
         define_value_scopes_and_accessors field_name, values, options
+        return unless options[:multiple]
+        define_array_field_writer field_name
       end
 
       private
 
       def default_options
         {
-          :multiple => false,
-          :required => true,
-          :validate => true
+          multiple: false,
+          required: true,
+          validate: true
         }
       end
 
@@ -48,24 +50,30 @@ module Mongoid
       def create_field(field_name, options, values)
         type = options[:multiple] && Array || Symbol
         default = \
-        if options.has_key?(:default)
+        if options.key?(:default)
           options[:default]
         else
           options[:multiple] ? [] : values.first
         end
-        field field_name, :type => type, :default => default
+        field field_name, type: type, default: default
+      end
+
+      def define_array_field_writer(field_name)
+        define_method("#{field_name}=") do |vals|
+          write_attribute(field_name, Array(vals).compact.map(&:to_sym))
+        end
       end
 
       def create_validations(field_name, values, options)
         if options[:multiple] && options[:validate]
           validates field_name, :'mongoid/enum/validators/multiple' => {
-            :in => values,
-            :allow_nil => !options[:required]
+            in: values.map(&:to_sym),
+            allow_nil: !options[:required]
           }
         elsif validate
           validates field_name,
-                    :inclusion => { :in => values },
-                    :allow_nil => !options[:required]
+                    inclusion: { in: values },
+                    allow_nil: !options[:required]
         end
       end
 
@@ -106,7 +114,9 @@ module Mongoid
 
       def define_string_accessor(field_name, value)
         class_eval "def #{value}?() self.#{field_name} == :#{value} end"
-        class_eval "def #{value}!() update_attributes! :#{field_name} => :#{value} end"
+        define_method("#{value}!") do
+          update_attributes! :"#{field_name}" => :"#{value}"
+        end
       end
     end
   end
