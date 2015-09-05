@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Specify your gem's dependencies in mongoid-enum.gemspec
-gem 'mongoid', '>= 5.0.0.beta'
+gem 'mongoid', '>= 5.0.0.rc0'
 
 gemspec
 

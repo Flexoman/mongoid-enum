@@ -239,6 +239,20 @@ describe Mongoid::Enum do
       expect(instance.status_i18n).to eq('Awaiting Approval')
     end
 
+    it 'should have a helper to translate the enum' do
+      instance.status = nil
+      expect(instance.status_i18n).to be_nil
+    end
+
+    it 'should return nil when enum is nil' do
+      expect(instance.roles_i18n).to be_nil
+    end
+
+    it 'should return nil when enum is nil' do
+      instance.roles << :author
+      expect(instance.roles_i18n).to eq ['Author']
+    end
+
     it 'should have a helper to translate the values' do
       expect(User.status_values)
         .to eq([['Awaiting Approval', :awaiting_approval]])

@@ -79,9 +79,20 @@ module Mongoid
 
       def create_i18n_helper(field_name, options)
         return if options[:i18n].is_a?(FalseClass)
-        define_method("#{field_name}_i18n") do
-          I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
+        if options[:multiple]
+          define_method("#{field_name}_i18n") do
+            return if self[field_name].blank?
+            self[field_name].map do |k|
+              I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
+                             "#{field_name}.#{k}")
+            end
+          end
+        else
+          define_method("#{field_name}_i18n") do
+            return if self[field_name].blank?
+            I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
                          "#{field_name}.#{self[field_name]}")
+          end
         end
       end
 
