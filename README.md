@@ -157,6 +157,12 @@ can turn them off:
 enum :status, [:up, :down], :validate => false
 ```
 
+To include `nil`:
+
+```ruby
+enum :status, [:up, :down], :required => false
+```
+
 ## I18n
 
 Two helpers are available, `#enum_i18`n:
