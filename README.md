@@ -165,16 +165,16 @@ enum :status, [:up, :down], :required => false
 
 ## I18n
 
-Two helpers are available, `#enum_i18`n:
+Two helpers are available, `#{enum}_i18n`:
 
 ```
 Payment#status_i18n # => "Pending"
 ```
 
-And `#enum_values`, good for drop downs:
+And `#{enum}_values`, good for drop downs:
 
 ```
-Payment#status_values # => [["Pending, :pending]....
+Payment.status_values # => [["Pending, :pending]....
 ```
 
 While/if the author implements/merges the i18n functionality, you may use
