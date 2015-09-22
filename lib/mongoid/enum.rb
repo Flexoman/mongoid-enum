@@ -65,15 +65,16 @@ module Mongoid
       end
 
       def create_validations(field_name, values, options)
-        if options[:multiple] && options[:validate]
+        return unless options[:validate]
+        if options[:multiple]
           validates field_name, :'mongoid/enum/validators/multiple' => {
             in: values.map(&:to_sym),
-            allow_nil: !options[:required]
+            allow_blank: !options[:required]
           }
-        elsif validate
+        else
           validates field_name,
                     inclusion: { in: values },
-                    allow_nil: !options[:required]
+                    allow_blank: !options[:required]
         end
       end
 
