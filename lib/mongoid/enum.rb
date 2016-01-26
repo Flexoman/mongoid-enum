@@ -28,8 +28,11 @@ module Mongoid
 
         create_validations field_name, values, options
         define_value_scopes_and_accessors field_name, values, options
-        return unless options[:multiple]
-        define_array_field_writer field_name
+        if options[:multiple]
+          define_array_field_writer field_name
+        else
+          define_field_writer field_name
+        end
       end
 
       private
@@ -50,17 +53,24 @@ module Mongoid
       def create_field(field_name, options, values)
         type = options[:multiple] && Array || Symbol
         default = \
-        if options.key?(:default)
-          options[:default]
-        else
-          options[:multiple] ? [] : values.first
-        end
+          if options.key?(:default)
+            options[:default]
+          else
+            options[:multiple] ? [] : values.first
+          end
         field field_name, type: type, default: default
       end
 
       def define_array_field_writer(field_name)
         define_method("#{field_name}=") do |vals|
           write_attribute(field_name, Array(vals).compact.map(&:to_sym))
+        end
+      end
+
+      def define_field_writer(field_name)
+        define_method("#{field_name}=") do |val|
+          val = nil if val.respond_to?(:empty?) && val.empty?
+          write_attribute(field_name, val)
         end
       end
 

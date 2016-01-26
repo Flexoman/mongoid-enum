@@ -85,6 +85,11 @@ describe Mongoid::Enum do
           expect(instance.status).to eq :banned
         end
 
+        it 'accepts empty string as nil' do
+          instance.status = ''
+          expect(instance.status).to be_nil
+        end
+
         it 'accepts symbols' do
           instance.status = :banned
           expect(instance.status).to eq :banned
@@ -241,6 +246,11 @@ describe Mongoid::Enum do
 
     it 'should have a helper to translate the enum' do
       instance.status = nil
+      expect(instance.status_i18n).to be_nil
+    end
+
+    it 'should have a helper to translate the enum with empty' do
+      instance.status = ''
       expect(instance.status_i18n).to be_nil
     end
 
