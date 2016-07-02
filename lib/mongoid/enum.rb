@@ -23,8 +23,8 @@ module Mongoid
         set_values_constant field_name, values
 
         create_field field_name, options, values
-        create_i18n_helper field_name, options
-        create_values_helper field_name, options
+        create_i18n_helper model_name, field_name, options
+        create_values_helper model_name, field_name, options
 
         create_validations field_name, values, options
         define_value_scopes_and_accessors field_name, values, options
@@ -88,30 +88,30 @@ module Mongoid
         end
       end
 
-      def create_i18n_helper(field_name, options)
+      def create_i18n_helper(main_model, field_name, options)
         return if options[:i18n].is_a?(FalseClass)
         if options[:multiple]
           define_method("#{field_name}_i18n") do
             return if self[field_name].blank?
             self[field_name].map do |k|
-              I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
+              I18n.translate("mongoid.enums.#{main_model.to_s.underscore}."\
                              "#{field_name}.#{k}")
             end
           end
         else
           define_method("#{field_name}_i18n") do
             return if self[field_name].blank?
-            I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
+            I18n.translate("mongoid.enums.#{main_model.to_s.underscore}."\
                          "#{field_name}.#{self[field_name]}")
           end
         end
       end
 
-      def create_values_helper(field_name, options)
+      def create_values_helper(main_model, field_name, options)
         return if options[:i18n].is_a?(FalseClass)
         define_singleton_method("#{field_name}_values") do
-          I18n.translate("mongoid.enums.#{model_name.to_s.underscore}."\
-                         "#{field_name}").map {  |k, v| [v, k] }
+          I18n.translate("mongoid.enums.#{main_model.to_s.underscore}."\
+                         "#{field_name}").map { |k, v| [v, k] }
         end
       end
 

@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+# Test Class
 class User
   include Mongoid::Document
   include Mongoid::Enum
@@ -9,6 +10,9 @@ class User
        default: [],
        multiple: true,
        required: false
+end
+
+class Admin < User
 end
 
 describe Mongoid::Enum do
@@ -77,7 +81,7 @@ describe Mongoid::Enum do
     end
   end
 
-  describe 'accessors'do
+  describe 'accessors' do
     context 'when singular' do
       describe 'setter' do
         it 'accepts strings' do
@@ -135,7 +139,7 @@ describe Mongoid::Enum do
         end
 
         it 'accepts arrays of strings' do
-          instance.roles = %w( author editor )
+          instance.roles = %w(author editor)
           instance.save
           puts instance.errors.full_messages
           instance.reload
@@ -143,12 +147,13 @@ describe Mongoid::Enum do
           expect(instance.roles).to include(:editor)
         end
 
-        it 'accepts arrays of symbols'  do
+        it 'accepts arrays of symbols' do
           instance.roles = [:author, :editor]
           expect(instance.roles).to include(:author)
           expect(instance.roles).to include(:editor)
         end
       end
+
       describe '{{value}}!' do
         context 'when field is nil' do
           it 'creates an array containing the value' do
@@ -266,6 +271,15 @@ describe Mongoid::Enum do
     it 'should have a helper to translate the values' do
       expect(User.status_values)
         .to eq([['Awaiting Approval', :awaiting_approval]])
+    end
+
+    it 'should use class where it was coded into' do
+      expect(Admin.status_values)
+        .to eq([['Awaiting Approval', :awaiting_approval]])
+    end
+
+    it 'should use class where it was coded into' do
+      expect(Admin.new.status_i18n).to eq('Awaiting Approval')
     end
   end
 end
